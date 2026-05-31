@@ -8,251 +8,98 @@
 <title>REC</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&display=swap');
-
   :root {
-    --bg: #0a0a0a;
-    --surface: #141414;
-    --border: #242424;
-    --rec: #ff2d2d;
-    --rec-glow: rgba(255,45,45,0.35);
-    --pause: #f5a623;
-    --pause-glow: rgba(245,166,35,0.35);
-    --ok: #34c759;
-    --ok-glow: rgba(52,199,89,0.3);
-    --text: #e8e8e8;
-    --muted: #555;
-    --mono: 'DM Mono', monospace;
-    --display: 'Bebas Neue', cursive;
+    --bg: #0a0a0a; --surface: #141414; --border: #242424;
+    --rec: #ff2d2d; --rec-glow: rgba(255,45,45,0.35);
+    --pause: #f5a623; --pause-glow: rgba(245,166,35,0.35);
+    --ok: #34c759; --ok-glow: rgba(52,199,89,0.3);
+    --text: #e8e8e8; --muted: #555;
+    --mono: 'DM Mono', monospace; --display: 'Bebas Neue', cursive;
   }
-
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--mono);
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    padding: env(safe-area-inset-top,20px) 24px env(safe-area-inset-bottom,24px);
-    overflow: hidden;
-    user-select: none;
-  }
-
-  #startScreen {
-    position: fixed; inset: 0;
-    background: var(--bg);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 40px;
-    z-index: 100;
-    transition: opacity 0.4s;
-  }
-  #startScreen.hidden { opacity: 0; pointer-events: none; }
-
-  .start-logo {
-    font-family: var(--display);
-    font-size: 72px;
-    letter-spacing: 12px;
-    color: var(--rec);
-  }
-  .start-sub {
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: var(--muted);
-    text-transform: uppercase;
-    text-align: center;
-    line-height: 1.8;
-  }
-  .btn-start {
-    width: 200px; height: 200px;
-    border-radius: 50%;
-    border: none;
-    background: var(--rec);
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    box-shadow: 0 0 0 12px rgba(255,45,45,0.12), 0 0 60px var(--rec-glow);
-    animation: startPulse 2s ease-in-out infinite;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .btn-start:active { transform: scale(0.94); }
-  .btn-start-icon {
-    width: 48px; height: 48px;
-    border-radius: 50%;
-    background: #fff;
-  }
-  .btn-start-label {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: rgba(255,255,255,0.85);
-    text-transform: uppercase;
-  }
-  @keyframes startPulse {
-    0%,100% { box-shadow: 0 0 0 12px rgba(255,45,45,0.12), 0 0 60px var(--rec-glow); }
-    50%      { box-shadow: 0 0 0 24px rgba(255,45,45,0.05), 0 0 90px rgba(255,45,45,0.5); }
-  }
-  .mic-hint {
-    font-size: 11px;
-    letter-spacing: 1px;
-    color: var(--muted);
-    text-align: center;
-  }
-
-  .header {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 12px;
-  }
-  .logo {
-    font-family: var(--display);
-    font-size: 28px;
-    letter-spacing: 4px;
-    color: var(--rec);
-  }
-  .status-badge {
-    font-size: 10px;
-    letter-spacing: 2px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    transition: all 0.3s;
-    text-transform: uppercase;
-  }
-  .status-badge.recording { border-color: var(--rec);   color: var(--rec);   background: var(--rec-glow); }
-  .status-badge.paused    { border-color: var(--pause); color: var(--pause); background: var(--pause-glow); }
-  .status-badge.stopped   { border-color: var(--ok);    color: var(--ok);    background: var(--ok-glow); }
-
-  .center {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 36px;
-    width: 100%;
-  }
-
-  .timer {
-    font-family: var(--display);
-    font-size: clamp(72px,22vw,96px);
-    letter-spacing: 6px;
-    color: var(--text);
-    line-height: 1;
-    transition: color 0.3s;
-  }
-  .timer.recording { color: #fff; }
-  .timer.paused    { color: var(--pause); }
-
-  .waveform-wrap { width:100%; height:100px; position:relative; }
+  body { background:var(--bg); color:var(--text); font-family:var(--mono); min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:space-between; padding:env(safe-area-inset-top,20px) 24px env(safe-area-inset-bottom,24px); overflow:hidden; user-select:none; }
+  #apiScreen { position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; z-index:200; padding:32px; transition:opacity 0.4s; }
+  #apiScreen.hidden { opacity:0; pointer-events:none; }
+  .api-logo { font-family:var(--display); font-size:56px; letter-spacing:10px; color:var(--rec); }
+  .api-title { font-size:12px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; text-align:center; }
+  .api-input { width:100%; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 16px; color:var(--text); font-family:var(--mono); font-size:12px; letter-spacing:1px; outline:none; -webkit-appearance:none; }
+  .api-input:focus { border-color:var(--rec); }
+  .api-hint { font-size:10px; letter-spacing:1px; color:var(--muted); text-align:center; line-height:1.8; }
+  .btn-api-save { width:100%; height:52px; border-radius:14px; border:none; background:var(--rec); font-family:var(--mono); font-size:13px; letter-spacing:2px; color:#fff; font-weight:500; cursor:pointer; text-transform:uppercase; }
+  .btn-api-save:active { transform:scale(0.97); }
+  #startScreen { position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:40px; z-index:100; transition:opacity 0.4s; }
+  #startScreen.hidden { opacity:0; pointer-events:none; }
+  .start-logo { font-family:var(--display); font-size:72px; letter-spacing:12px; color:var(--rec); }
+  .start-sub { font-size:11px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; text-align:center; line-height:1.8; }
+  .btn-start { width:200px; height:200px; border-radius:50%; border:none; background:var(--rec); cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; box-shadow:0 0 0 12px rgba(255,45,45,0.12), 0 0 60px var(--rec-glow); animation:startPulse 2s ease-in-out infinite; }
+  .btn-start:active { transform:scale(0.94); }
+  .btn-start-icon { width:48px; height:48px; border-radius:50%; background:#fff; }
+  .btn-start-label { font-family:var(--mono); font-size:11px; letter-spacing:3px; color:rgba(255,255,255,0.85); text-transform:uppercase; }
+  @keyframes startPulse { 0%,100% { box-shadow:0 0 0 12px rgba(255,45,45,0.12), 0 0 60px var(--rec-glow); } 50% { box-shadow:0 0 0 24px rgba(255,45,45,0.05), 0 0 90px rgba(255,45,45,0.5); } }
+  .mic-hint { font-size:11px; letter-spacing:1px; color:var(--muted); text-align:center; }
+  .header { width:100%; display:flex; justify-content:space-between; align-items:center; padding-top:12px; }
+  .logo { font-family:var(--display); font-size:28px; letter-spacing:4px; color:var(--rec); }
+  .status-badge { font-size:10px; letter-spacing:2px; padding:4px 10px; border-radius:20px; border:1px solid var(--border); color:var(--muted); transition:all 0.3s; text-transform:uppercase; }
+  .status-badge.recording { border-color:var(--rec); color:var(--rec); background:var(--rec-glow); }
+  .status-badge.paused { border-color:var(--pause); color:var(--pause); background:var(--pause-glow); }
+  .status-badge.stopped { border-color:var(--ok); color:var(--ok); background:var(--ok-glow); }
+  .center { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px; width:100%; }
+  .timer { font-family:var(--display); font-size:clamp(64px,20vw,88px); letter-spacing:6px; color:var(--text); line-height:1; transition:color 0.3s; }
+  .timer.recording { color:#fff; }
+  .timer.paused { color:var(--pause); }
+  .waveform-wrap { width:100%; height:80px; }
   canvas#wave { width:100%; height:100%; display:block; border-radius:4px; }
-
   .take-count { font-size:11px; letter-spacing:2px; color:var(--muted); }
   .take-count span { color:var(--text); }
-
-  .controls { width:100%; display:flex; flex-direction:column; gap:16px; padding-bottom:8px; }
+  .controls { width:100%; display:flex; flex-direction:column; gap:12px; padding-bottom:8px; }
   .row-main { display:flex; gap:16px; align-items:center; justify-content:center; }
-
-  .btn {
-    border: none; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: transform 0.12s, opacity 0.2s;
-    -webkit-touch-callout: none;
-  }
-  .btn:active { transform: scale(0.93); }
+  .btn { border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform 0.12s, opacity 0.2s; }
+  .btn:active { transform:scale(0.93); }
   .btn:disabled { opacity:0.25; pointer-events:none; }
-
-  .btn-rec {
-    width:80px; height:80px; border-radius:50%;
-    background: var(--rec);
-    box-shadow: 0 0 0 6px rgba(255,45,45,0.15), 0 0 40px var(--rec-glow);
-    position: relative;
-  }
-  .btn-rec::after {
-    content:''; width:28px; height:28px; border-radius:50%;
-    background:#fff; position:absolute;
-  }
+  .btn-rec { width:80px; height:80px; border-radius:50%; background:var(--rec); box-shadow:0 0 0 6px rgba(255,45,45,0.15), 0 0 40px var(--rec-glow); position:relative; }
+  .btn-rec::after { content:''; width:28px; height:28px; border-radius:50%; background:#fff; position:absolute; }
   .btn-rec.stopped::after { border-radius:6px; width:24px; height:24px; }
-  @keyframes pulse {
-    0%,100% { box-shadow:0 0 0 6px rgba(255,45,45,0.15), 0 0 40px var(--rec-glow); }
-    50%      { box-shadow:0 0 0 14px rgba(255,45,45,0.07), 0 0 60px rgba(255,45,45,0.5); }
-  }
-  .btn-rec.recording { animation: pulse 1.6s ease-in-out infinite; }
-
-  .btn-pause {
-    width:60px; height:60px; border-radius:50%;
-    background: var(--surface); border:1px solid var(--border);
-    transition: box-shadow 0.3s, border-color 0.3s;
-  }
+  @keyframes pulse { 0%,100% { box-shadow:0 0 0 6px rgba(255,45,45,0.15), 0 0 40px var(--rec-glow); } 50% { box-shadow:0 0 0 14px rgba(255,45,45,0.07), 0 0 60px rgba(255,45,45,0.5); } }
+  .btn-rec.recording { animation:pulse 1.6s ease-in-out infinite; }
+  .btn-pause { width:60px; height:60px; border-radius:50%; background:var(--surface); border:1px solid var(--border); transition:box-shadow 0.3s, border-color 0.3s; }
   .btn-pause.active { border-color:var(--pause); box-shadow:0 0 20px var(--pause-glow); }
-
-  .btn-stop {
-    width:60px; height:60px; border-radius:50%;
-    background: var(--surface); border:1px solid var(--border);
-  }
+  .btn-stop { width:60px; height:60px; border-radius:50%; background:var(--surface); border:1px solid var(--border); }
   .btn-stop::after { content:''; width:22px; height:22px; border-radius:4px; background:var(--text); }
-
   .row-save { display:flex; gap:12px; }
-  .btn-save {
-    flex:1; height:52px; border-radius:14px;
-    background: var(--ok);
-    font-family: var(--mono); font-size:13px; letter-spacing:2px;
-    color:#000; font-weight:500;
-    box-shadow: 0 0 30px var(--ok-glow);
-    text-transform: uppercase;
-  }
-  .btn-discard {
-    width:52px; height:52px; border-radius:14px;
-    background: var(--surface); border:1px solid var(--border);
-    font-family: var(--mono); font-size:18px; color:var(--muted);
-  }
-
-  .recordings {
-    width:100%; max-height:200px; overflow-y:auto;
-    display:flex; flex-direction:column; gap:8px; padding-bottom:4px;
-  }
+  .btn-save { flex:1; height:52px; border-radius:14px; background:var(--ok); font-family:var(--mono); font-size:13px; letter-spacing:2px; color:#000; font-weight:500; box-shadow:0 0 30px var(--ok-glow); text-transform:uppercase; }
+  .btn-discard { width:52px; height:52px; border-radius:14px; background:var(--surface); border:1px solid var(--border); font-family:var(--mono); font-size:18px; color:var(--muted); }
+  .btn-transcribe { width:100%; height:48px; border-radius:14px; border:1px solid #5b5bd6; background:rgba(91,91,214,0.15); font-family:var(--mono); font-size:12px; letter-spacing:2px; color:#a5a5f5; text-transform:uppercase; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .btn-transcribe:disabled { opacity:0.3; pointer-events:none; }
+  .btn-transcribe:active { transform:scale(0.97); }
+  .transcript-panel { width:100%; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px; display:none; flex-direction:column; gap:10px; }
+  .transcript-panel.show { display:flex; }
+  .transcript-label { font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; }
+  .transcript-text { font-size:13px; line-height:1.7; color:var(--text); max-height:120px; overflow-y:auto; }
+  .transcript-text::-webkit-scrollbar { display:none; }
+  .btn-copy-text { align-self:flex-end; height:32px; padding:0 14px; border-radius:8px; border:1px solid var(--border); background:transparent; font-family:var(--mono); font-size:11px; letter-spacing:1px; color:var(--ok); cursor:pointer; }
+  .recordings { width:100%; max-height:160px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding-bottom:4px; }
   .recordings::-webkit-scrollbar { display:none; }
-
-  .rec-item {
-    background: var(--surface); border:1px solid var(--border);
-    border-radius:12px; padding:12px 14px;
-    display:flex; align-items:center; gap:12px;
-  }
+  .rec-item { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px 14px; display:flex; align-items:center; gap:12px; }
   .rec-dot { width:8px; height:8px; border-radius:50%; background:var(--rec); flex-shrink:0; }
   .rec-info { flex:1; min-width:0; }
   .rec-name { font-size:12px; letter-spacing:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .rec-dur  { font-size:10px; color:var(--muted); margin-top:2px; }
-  .btn-dl {
-    width:34px; height:34px; border-radius:8px;
-    background:transparent; border:1px solid var(--border);
-    color:var(--ok); font-size:16px; flex-shrink:0;
-  }
-
-  .toast {
-    position:fixed; bottom:100px; left:50%; transform:translateX(-50%);
-    background:#1e1e1e; border:1px solid #333; color:#fff;
-    font-family:var(--mono); font-size:12px; letter-spacing:1px;
-    padding:10px 20px; border-radius:100px;
-    opacity:0; transition:opacity 0.3s; pointer-events:none;
-    z-index:99; white-space:nowrap;
-  }
+  .rec-dur { font-size:10px; color:var(--muted); margin-top:2px; }
+  .btn-dl { width:34px; height:34px; border-radius:8px; background:transparent; border:1px solid var(--border); color:var(--ok); font-size:16px; flex-shrink:0; }
+  .toast { position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:#1e1e1e; border:1px solid #333; color:#fff; font-family:var(--mono); font-size:12px; letter-spacing:1px; padding:10px 20px; border-radius:100px; opacity:0; transition:opacity 0.3s; pointer-events:none; z-index:99; white-space:nowrap; }
   .toast.show { opacity:1; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .spinner { width:16px; height:16px; border:2px solid rgba(165,165,245,0.3); border-top-color:#a5a5f5; border-radius:50%; animation:spin 0.8s linear infinite; }
 </style>
 </head>
 <body>
-
-<div id="startScreen">
+<div id="apiScreen">
+  <div class="api-logo">REC</div>
+  <div class="api-title">Groq APIキーを入力してください</div>
+  <input class="api-input" id="apiKeyInput" type="password" placeholder="gsk_xxxxxxxxxxxx" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <div class="api-hint">APIキーはこのデバイス内にのみ保存されます。<br>外部に送信されることはありません。</div>
+  <button class="btn-api-save" id="btnApiSave">保存して開始</button>
+</div>
+<div id="startScreen" style="display:none;">
   <div class="start-logo">REC</div>
   <div class="start-sub">録音アプリ<br>タップしてマイクを有効にする</div>
   <button class="btn-start" id="btnStart">
@@ -261,18 +108,15 @@
   </button>
   <div class="mic-hint">※ マイクの使用許可を求められたら<br>「許可」をタップしてください</div>
 </div>
-
 <div class="header">
   <div class="logo">REC</div>
   <div class="status-badge" id="statusBadge">待機中</div>
 </div>
-
 <div class="center">
   <div class="timer" id="timer">00:00:00</div>
   <div class="waveform-wrap"><canvas id="wave"></canvas></div>
   <div class="take-count">TAKES &nbsp;<span id="takeCount">0</span></div>
 </div>
-
 <div class="controls">
   <div class="row-main">
     <button class="btn btn-pause" id="btnPause" disabled>
@@ -285,214 +129,108 @@
     <button class="btn btn-save" id="btnSave">保存する</button>
     <button class="btn btn-discard" id="btnDiscard">✕</button>
   </div>
+  <button class="btn-transcribe" id="btnTranscribe" disabled>
+    <span id="transcribeLabel">文字起こし</span>
+  </button>
+  <div class="transcript-panel" id="transcriptPanel">
+    <div class="transcript-label">文字起こし結果</div>
+    <div class="transcript-text" id="transcriptText"></div>
+    <button class="btn-copy-text" id="btnCopyText">コピー</button>
+  </div>
 </div>
-
 <div class="recordings" id="recordingsList"></div>
 <div class="toast" id="toast"></div>
-
 <script>
-let mediaRecorder=null, audioChunks=[], stream=null, analyser=null;
-let animFrame=null, startTime=0, elapsed=0, timerInterval=null;
-let state='idle', takes=[], pendingBlob=null;
-
-const btnStart  = document.getElementById('btnStart');
-const startScr  = document.getElementById('startScreen');
-const btnRec    = document.getElementById('btnRec');
-const btnPause  = document.getElementById('btnPause');
-const btnStop   = document.getElementById('btnStop');
-const btnSave   = document.getElementById('btnSave');
-const btnDiscard= document.getElementById('btnDiscard');
-const rowSave   = document.getElementById('rowSave');
-const timerEl   = document.getElementById('timer');
-const badge     = document.getElementById('statusBadge');
-const takeCount = document.getElementById('takeCount');
-const recList   = document.getElementById('recordingsList');
-const canvas    = document.getElementById('wave');
-const ctx2d     = canvas.getContext('2d');
-const toast     = document.getElementById('toast');
-
-function resizeCanvas() {
-  canvas.width  = canvas.offsetWidth  * window.devicePixelRatio;
-  canvas.height = canvas.offsetHeight * window.devicePixelRatio;
-}
-window.addEventListener('resize', resizeCanvas);
-
+let mediaRecorder=null,audioChunks=[],stream=null,analyser=null;
+let animFrame=null,startTime=0,elapsed=0,timerInterval=null;
+let state='idle',takes=[],pendingBlob=null;
+let apiKey=localStorage.getItem('groq_api_key')||'';
+const apiScreen=document.getElementById('apiScreen');
+const apiKeyInput=document.getElementById('apiKeyInput');
+const btnApiSave=document.getElementById('btnApiSave');
+const startScr=document.getElementById('startScreen');
+const btnStart=document.getElementById('btnStart');
+const btnRec=document.getElementById('btnRec');
+const btnPause=document.getElementById('btnPause');
+const btnStop=document.getElementById('btnStop');
+const btnSave=document.getElementById('btnSave');
+const btnDiscard=document.getElementById('btnDiscard');
+const rowSave=document.getElementById('rowSave');
+const btnTranscribe=document.getElementById('btnTranscribe');
+const transcribeLabel=document.getElementById('transcribeLabel');
+const transcriptPanel=document.getElementById('transcriptPanel');
+const transcriptText=document.getElementById('transcriptText');
+const btnCopyText=document.getElementById('btnCopyText');
+const timerEl=document.getElementById('timer');
+const badge=document.getElementById('statusBadge');
+const takeCount=document.getElementById('takeCount');
+const recList=document.getElementById('recordingsList');
+const canvas=document.getElementById('wave');
+const ctx2d=canvas.getContext('2d');
+const toast=document.getElementById('toast');
+if(apiKey){apiScreen.classList.add('hidden');setTimeout(()=>{apiScreen.style.display='none';startScr.style.display='flex';},10);}
+btnApiSave.addEventListener('click',()=>{
+  const val=apiKeyInput.value.trim();
+  if(!val.startsWith('gsk_')){showToast('APIキーは gsk_ から始まります');return;}
+  apiKey=val;localStorage.setItem('groq_api_key',apiKey);
+  apiScreen.classList.add('hidden');
+  setTimeout(()=>{apiScreen.style.display='none';startScr.style.display='flex';},420);
+});
+function resizeCanvas(){canvas.width=canvas.offsetWidth*window.devicePixelRatio;canvas.height=canvas.offsetHeight*window.devicePixelRatio;}
+window.addEventListener('resize',resizeCanvas);
 let toastTimer;
-function showToast(msg) {
-  toast.textContent = msg;
-  toast.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
-}
-
-function fmt(ms) {
-  const s=Math.floor(ms/1000);
-  return [Math.floor(s/3600), Math.floor((s%3600)/60), s%60]
-    .map(n=>String(n).padStart(2,'0')).join(':');
-}
-function startTimer() {
-  startTime = Date.now() - elapsed;
-  timerInterval = setInterval(() => { elapsed=Date.now()-startTime; timerEl.textContent=fmt(elapsed); }, 200);
-}
-function pauseTimer()  { clearInterval(timerInterval); }
-function resetTimer()  { clearInterval(timerInterval); elapsed=0; timerEl.textContent='00:00:00'; }
-
-let waveData = new Uint8Array(128).fill(128);
-
-function drawIdle() {
-  const W=canvas.width, H=canvas.height;
-  ctx2d.clearRect(0,0,W,H);
-  ctx2d.strokeStyle='#242424'; ctx2d.lineWidth=1.5;
-  ctx2d.beginPath(); ctx2d.moveTo(0,H/2); ctx2d.lineTo(W,H/2); ctx2d.stroke();
-}
-function drawWave() {
-  const W=canvas.width, H=canvas.height;
-  ctx2d.clearRect(0,0,W,H);
-  if (analyser && state==='recording') analyser.getByteTimeDomainData(waveData);
-  if (state!=='recording' && state!=='paused') { drawIdle(); return; }
-  const g = ctx2d.createLinearGradient(0,0,W,0);
-  const c = state==='recording' ? '#ff2d2d' : '#f5a623';
-  g.addColorStop(0,c+'44'); g.addColorStop(0.5,c); g.addColorStop(1,c+'44');
-  ctx2d.strokeStyle=g; ctx2d.lineWidth=2*window.devicePixelRatio;
-  ctx2d.beginPath();
-  const step=W/(waveData.length-1);
-  for(let i=0;i<waveData.length;i++){
-    const x=i*step, y=((waveData[i]/128)-1)*(H*0.45)+H/2;
-    i===0 ? ctx2d.moveTo(x,y) : ctx2d.lineTo(x,y);
-  }
-  ctx2d.stroke();
-  animFrame = requestAnimationFrame(drawWave);
-}
-
-btnStart.addEventListener('click', async () => {
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  } catch(e) {
-    showToast('マイクの使用が拒否されました。設定→Safari→マイクを確認してください');
-    return;
-  }
+function showToast(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),2800);}
+function fmt(ms){const s=Math.floor(ms/1000);return[Math.floor(s/3600),Math.floor((s%3600)/60),s%60].map(n=>String(n).padStart(2,'0')).join(':');}
+function startTimer(){startTime=Date.now()-elapsed;timerInterval=setInterval(()=>{elapsed=Date.now()-startTime;timerEl.textContent=fmt(elapsed);},200);}
+function pauseTimer(){clearInterval(timerInterval);}
+function resetTimer(){clearInterval(timerInterval);elapsed=0;timerEl.textContent='00:00:00';}
+let waveData=new Uint8Array(128).fill(128);
+function drawIdle(){const W=canvas.width,H=canvas.height;ctx2d.clearRect(0,0,W,H);ctx2d.strokeStyle='#242424';ctx2d.lineWidth=1.5;ctx2d.beginPath();ctx2d.moveTo(0,H/2);ctx2d.lineTo(W,H/2);ctx2d.stroke();}
+function drawWave(){const W=canvas.width,H=canvas.height;ctx2d.clearRect(0,0,W,H);if(analyser&&state==='recording')analyser.getByteTimeDomainData(waveData);if(state!=='recording'&&state!=='paused'){drawIdle();return;}const g=ctx2d.createLinearGradient(0,0,W,0);const c=state==='recording'?'#ff2d2d':'#f5a623';g.addColorStop(0,c+'44');g.addColorStop(0.5,c);g.addColorStop(1,c+'44');ctx2d.strokeStyle=g;ctx2d.lineWidth=2*window.devicePixelRatio;ctx2d.beginPath();const step=W/(waveData.length-1);for(let i=0;i<waveData.length;i++){const x=i*step,y=((waveData[i]/128)-1)*(H*0.45)+H/2;i===0?ctx2d.moveTo(x,y):ctx2d.lineTo(x,y);}ctx2d.stroke();animFrame=requestAnimationFrame(drawWave);}
+btnStart.addEventListener('click',async()=>{
+  try{stream=await navigator.mediaDevices.getUserMedia({audio:true});}
+  catch(e){showToast('マイクの使用が拒否されました');return;}
   startScr.classList.add('hidden');
-  setTimeout(() => { startScr.style.display='none'; resizeCanvas(); drawIdle(); }, 420);
-  try {
-    const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 256;
-    waveData = new Uint8Array(analyser.frequencyBinCount);
-    audioCtx.createMediaStreamSource(stream).connect(analyser);
-  } catch(e) {}
+  setTimeout(()=>{startScr.style.display='none';resizeCanvas();drawIdle();},420);
+  try{const ac=new(window.AudioContext||window.webkitAudioContext)();analyser=ac.createAnalyser();analyser.fftSize=256;waveData=new Uint8Array(analyser.frequencyBinCount);ac.createMediaStreamSource(stream).connect(analyser);}catch(e){}
   startRecording();
 });
-
-function startRecording() {
-  audioChunks = [];
-  const mime = MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4'
-             : MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus'
-             : 'audio/webm';
-  mediaRecorder = new MediaRecorder(stream, { mimeType: mime });
-  mediaRecorder.ondataavailable = e => { if(e.data.size>0) audioChunks.push(e.data); };
-  mediaRecorder.onstop = () => {
-    pendingBlob = new Blob(audioChunks, { type: mime });
-    rowSave.style.display = 'flex';
-  };
-  mediaRecorder.start(100);
-  state='recording'; resetTimer(); startTimer(); updateUI();
-  cancelAnimationFrame(animFrame); drawWave();
-}
-
-function pauseRecording() {
-  if(mediaRecorder?.state==='recording'){
-    mediaRecorder.pause(); state='paused'; pauseTimer(); updateUI();
-    cancelAnimationFrame(animFrame); drawWave();
-  }
-}
-function resumeRecording() {
-  if(mediaRecorder?.state==='paused'){
-    mediaRecorder.resume(); state='recording'; startTimer(); updateUI();
-    cancelAnimationFrame(animFrame); drawWave();
-  }
-}
-function stopRecording() {
-  if(mediaRecorder && mediaRecorder.state!=='inactive'){
-    mediaRecorder.stop(); state='stopped'; pauseTimer(); updateUI();
-    cancelAnimationFrame(animFrame); drawIdle();
-  }
-}
-
-function saveRecording() {
-  if(!pendingBlob) return;
-  const ext  = pendingBlob.type.includes('mp4') ? 'm4a' : 'webm';
-  const name = `録音_${new Date().toLocaleString('ja-JP').replace(/[\/: ]/g,'-')}.${ext}`;
-  const url  = URL.createObjectURL(pendingBlob);
-  const a    = document.createElement('a');
-  a.href=url; a.download=name; a.click();
-  setTimeout(()=>URL.revokeObjectURL(url), 60000);
-  addToList(name, fmt(elapsed), pendingBlob, ext);
-  takes.push({name}); takeCount.textContent=takes.length;
-  pendingBlob=null; rowSave.style.display='none';
-  state='idle'; resetTimer(); updateUI(); drawIdle();
-  showToast('「ファイル」アプリに保存しました');
-}
-function discardRecording() {
-  pendingBlob=null; rowSave.style.display='none';
-  state='idle'; resetTimer(); updateUI(); drawIdle();
-  showToast('録音を破棄しました');
-}
-
-function addToList(name, dur, blob, ext) {
-  const item = document.createElement('div');
-  item.className='rec-item';
-  item.innerHTML=`
-    <div class="rec-dot"></div>
-    <div class="rec-info">
-      <div class="rec-name">${name}</div>
-      <div class="rec-dur">${dur}</div>
-    </div>
-    <button class="btn btn-dl">↓</button>`;
-  item.querySelector('.btn-dl').addEventListener('click',()=>{
-    const u=URL.createObjectURL(blob), a=document.createElement('a');
-    a.href=u; a.download=name; a.click();
-    setTimeout(()=>URL.revokeObjectURL(u),60000);
-  });
-  recList.prepend(item);
-}
-
-function updateUI() {
-  const labels={idle:'待機中',recording:'録音中',paused:'一時停止',stopped:'停止'};
-  badge.textContent=labels[state]||'';
-  badge.className='status-badge';
-  if(state==='recording') badge.classList.add('recording');
-  if(state==='paused')    badge.classList.add('paused');
-  if(state==='stopped')   badge.classList.add('stopped');
-
-  timerEl.className='timer';
-  if(state==='recording') timerEl.classList.add('recording');
-  if(state==='paused')    timerEl.classList.add('paused');
-
-  btnRec.className='btn btn-rec';
-  if(state==='recording') btnRec.classList.add('recording');
-  if(state==='stopped')   btnRec.classList.add('stopped');
-
-  btnPause.disabled=(state==='idle'||state==='stopped');
-  btnPause.className='btn btn-pause';
-  if(state==='paused') btnPause.classList.add('active');
-  btnPause.innerHTML = state==='paused'
-    ? `<svg viewBox="0 0 24 24" width="20" height="20" fill="white"><polygon points="5,3 19,12 5,21"/></svg>`
-    : `<svg viewBox="0 0 24 24" width="20" height="20"><rect x="5" y="4" width="4" height="16" rx="1" fill="white"/><rect x="15" y="4" width="4" height="16" rx="1" fill="white"/></svg>`;
-
-  btnStop.disabled=(state==='idle'||state==='stopped');
-  btnRec.disabled=(state==='recording'||state==='paused'||state==='stopped');
-}
-
-btnRec.addEventListener('click', () => { if(state==='idle') startRecording(); });
-btnPause.addEventListener('click', () => {
-  if(state==='recording') pauseRecording();
-  else if(state==='paused') resumeRecording();
+function startRecording(){audioChunks=[];const mime=MediaRecorder.isTypeSupported('audio/mp4')?'audio/mp4':MediaRecorder.isTypeSupported('audio/webm;codecs=opus')?'audio/webm;codecs=opus':'audio/webm';mediaRecorder=new MediaRecorder(stream,{mimeType:mime});mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data);};mediaRecorder.onstop=()=>{pendingBlob=new Blob(audioChunks,{type:mime});rowSave.style.display='flex';btnTranscribe.disabled=false;transcriptPanel.classList.remove('show');transcriptText.textContent='';};mediaRecorder.start(100);state='recording';resetTimer();startTimer();updateUI();cancelAnimationFrame(animFrame);drawWave();}
+function pauseRecording(){if(mediaRecorder?.state==='recording'){mediaRecorder.pause();state='paused';pauseTimer();updateUI();cancelAnimationFrame(animFrame);drawWave();}}
+function resumeRecording(){if(mediaRecorder?.state==='paused'){mediaRecorder.resume();state='recording';startTimer();updateUI();cancelAnimationFrame(animFrame);drawWave();}}
+function stopRecording(){if(mediaRecorder&&mediaRecorder.state!=='inactive'){mediaRecorder.stop();state='stopped';pauseTimer();updateUI();cancelAnimationFrame(animFrame);drawIdle();}}
+function saveRecording(){if(!pendingBlob)return;const ext=pendingBlob.type.includes('mp4')?'m4a':'webm';const name=`録音_${new Date().toLocaleString('ja-JP').replace(/[\/: ]/g,'-')}.${ext}`;const url=URL.createObjectURL(pendingBlob);const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);addToList(name,fmt(elapsed),pendingBlob,ext);takes.push({name});takeCount.textContent=takes.length;pendingBlob=null;rowSave.style.display='none';state='idle';resetTimer();updateUI();drawIdle();showToast('「ファイル」アプリに保存しました');}
+function discardRecording(){pendingBlob=null;rowSave.style.display='none';btnTranscribe.disabled=true;transcriptPanel.classList.remove('show');state='idle';resetTimer();updateUI();drawIdle();showToast('録音を破棄しました');}
+btnTranscribe.addEventListener('click',async()=>{
+  if(!pendingBlob)return;
+  if(!apiKey){showToast('APIキーが設定されていません');return;}
+  btnTranscribe.disabled=true;
+  transcribeLabel.innerHTML='<span class="spinner"></span>&nbsp;文字起こし中...';
+  transcriptPanel.classList.remove('show');
+  try{
+    const formData=new FormData();
+    const ext=pendingBlob.type.includes('mp4')?'m4a':'webm';
+    formData.append('file',pendingBlob,`audio.${ext}`);
+    formData.append('model','whisper-large-v3-turbo');
+    formData.append('language','ja');
+    formData.append('response_format','json');
+    const res=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{method:'POST',headers:{'Authorization':`Bearer ${apiKey}`},body:formData});
+    if(!res.ok){const err=await res.json();throw new Error(err.error?.message||'APIエラー');}
+    const data=await res.json();
+    transcriptText.textContent=data.text||'（文字起こし結果が空です）';
+    transcriptPanel.classList.add('show');
+    showToast('文字起こし完了！');
+  }catch(e){showToast('エラー: '+e.message);}
+  finally{transcribeLabel.textContent='文字起こし';btnTranscribe.disabled=false;}
 });
-btnStop.addEventListener('click', () => {
-  if(state==='recording'||state==='paused') stopRecording();
-});
-btnSave.addEventListener('click', saveRecording);
-btnDiscard.addEventListener('click', discardRecording);
+btnCopyText.addEventListener('click',()=>{const text=transcriptText.textContent;if(navigator.clipboard){navigator.clipboard.writeText(text).then(()=>showToast('コピーしました'));}else{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('コピーしました');}});
+function addToList(name,dur,blob,ext){const item=document.createElement('div');item.className='rec-item';item.innerHTML=`<div class="rec-dot"></div><div class="rec-info"><div class="rec-name">${name}</div><div class="rec-dur">${dur}</div></div><button class="btn btn-dl">↓</button>`;item.querySelector('.btn-dl').addEventListener('click',()=>{const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),60000);});recList.prepend(item);}
+function updateUI(){const labels={idle:'待機中',recording:'録音中',paused:'一時停止',stopped:'停止'};badge.textContent=labels[state]||'';badge.className='status-badge';if(state==='recording')badge.classList.add('recording');if(state==='paused')badge.classList.add('paused');if(state==='stopped')badge.classList.add('stopped');timerEl.className='timer';if(state==='recording')timerEl.classList.add('recording');if(state==='paused')timerEl.classList.add('paused');btnRec.className='btn btn-rec';if(state==='recording')btnRec.classList.add('recording');if(state==='stopped')btnRec.classList.add('stopped');btnPause.disabled=(state==='idle'||state==='stopped');btnPause.className='btn btn-pause';if(state==='paused')btnPause.classList.add('active');btnPause.innerHTML=state==='paused'?`<svg viewBox="0 0 24 24" width="20" height="20" fill="white"><polygon points="5,3 19,12 5,21"/></svg>`:`<svg viewBox="0 0 24 24" width="20" height="20"><rect x="5" y="4" width="4" height="16" rx="1" fill="white"/><rect x="15" y="4" width="4" height="16" rx="1" fill="white"/></svg>`;btnStop.disabled=(state==='idle'||state==='stopped');btnRec.disabled=(state==='recording'||state==='paused'||state==='stopped');}
+btnRec.addEventListener('click',()=>{if(state==='idle')startRecording();});
+btnPause.addEventListener('click',()=>{if(state==='recording')pauseRecording();else if(state==='paused')resumeRecording();});
+btnStop.addEventListener('click',()=>{if(state==='recording'||state==='paused')stopRecording();});
+btnSave.addEventListener('click',saveRecording);
+btnDiscard.addEventListener('click',discardRecording);
 </script>
 </body>
 </html>
