@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>文字起こし</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&display=swap');
+  :root {
+    --bg:#0a0a0a; --surface:#141414; --border:#242424;
+    --accent:#5b5bd6; --accent-glow:rgba(91,91,214,0.3);
+    --ok:#34c759; --ok-glow:rgba(52,199,89,0.3);
+    --rec:#ff2d2d;
+    --text:#e8e8e8; --muted:#555;
+    --mono:'DM Mono',monospace; --display:'Bebas Neue',cursive;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { background:var(--bg); color:var(--text); font-family:var(--mono); min-height:100dvh; display:flex; flex-direction:column; align-items:center; padding:env(safe-area-inset-top,20px) 24px env(safe-area-inset-bottom,24px); gap:20px; }
+  .header { width:100%; display:flex; justify-content:space-between; align-items:center; padding-top:12px; }
+  .logo { font-family:var(--display); font-size:28px; letter-spacing:4px; color:var(--accent); }
+  .btn-settings { width:36px; height:36px; border-radius:10px; border:1px solid var(--border); background:transparent; color:var(--muted); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  #apiScreen { position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; z-index:200; padding:32px; transition:opacity 0.4s; }
+  #apiScreen.hidden { opacity:0; pointer-events:none; }
+  .api-logo { font-family:var(--display); font-size:56px; letter-spacing:10px; color:var(--accent); }
+  .api-title { font-size:12px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; text-align:center; }
+  .api-input { width:100%; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 16px; color:var(--text); font-family:var(--mono); font-size:12px; outline:none; -webkit-appearance:none; }
+  .api-input:focus { border-color:var(--accent); }
+  .api-hint { font-size:10px; letter-spacing:1px; color:var(--muted); text-align:center; line-height:1.8; }
+  .btn-primary { width:100%; height:52px; border-radius:14px; border:none; background:var(--accent); font-family:var(--mono); font-size:13px; letter-spacing:2px; color:#fff; font-weight:500; cursor:pointer; text-transform:uppercase; }
+  .btn-primary:active { transform:scale(0.97); }
+  .dropzone { width:100%; border:2px dashed var(--border); border-radius:20px; padding:40px 24px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; cursor:pointer; transition:border-color 0.3s, background 0.3s; position:relative; }
+  .dropzone.has-file { border-color:var(--ok); border-style:solid; background:rgba(52,199,89,0.05); }
+  .drop-icon { font-size:48px; }
+  .drop-title { font-size:13px; letter-spacing:2px; color:var(--text); text-transform:uppercase; text-align:center; }
+  .drop-sub { font-size:11px; letter-spacing:1px; color:var(--muted); text-align:center; }
+  .drop-input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+  .file-info { width:100%; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px 16px; display:none; align-items:center; gap:12px; }
+  .file-info.show { display:flex; }
+  .file-dot { width:10px; height:10px; border-radius:50%; background:var(--ok); flex-shrink:0; }
+  .file-details { flex:1; min-width:0; }
+  .file-name { font-size:12px; letter-spacing:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .file-size { font-size:10px; color:var(--muted); margin-top:3px; }
+  .btn-clear { width:30px; height:30px; border-radius:8px; border:1px solid var(--border); background:transparent; color:var(--muted); font-size:16px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .btn-transcribe { width:100%; height:56px; border-radius:16px; border:none; background:var(--accent); font-family:var(--mono); font-size:13px; letter-spacing:2px; color:#fff; font-weight:500; cursor:pointer; text-transform:uppercase; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 0 30px var(--accent-glow); transition:opacity 0.2s; }
+  .btn-transcribe:disabled { opacity:0.3; pointer-events:none; }
+  .btn-transcribe:active { transform:scale(0.97); }
+  .progress-wrap { width:100%; display:none; flex-direction:column; gap:8px; }
+  .progress-wrap.show { display:flex; }
+  .progress-label { font-size:11px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; }
+  .progress-bar-bg { width:100%; height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
+  .progress-bar { height:100%; background:var(--accent); border-radius:2px; transition:width 0.3s; }
+  .result-panel { width:100%; background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px; display:none; flex-direction:column; gap:12px; }
+  .result-panel.show { display:flex; }
+  .result-header { display:flex; justify-content:space-between; align-items:center; }
+  .result-label { font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; }
+  .btn-copy { height:30px; padding:0 14px; border-radius:8px; border:1px solid var(--border); background:transparent; font-family:var(--mono); font-size:11px; letter-spacing:1px; color:var(--ok); cursor:pointer; }
+  .result-text { font-size:14px; line-height:1.8; color:var(--text); max-height:300px; overflow-y:auto; white-space:pre-wrap; word-break:break-all; }
+  .result-text::-webkit-scrollbar { display:none; }
+  .btn-share { width:100%; height:44px; border-radius:12px; border:1px solid var(--ok); background:rgba(52,199,89,0.1); font-family:var(--mono); font-size:12px; letter-spacing:2px; color:var(--ok); cursor:pointer; text-transform:uppercase; }
+  .btn-share:active { transform:scale(0.97); }
+  .history-section { width:100%; display:flex; flex-direction:column; gap:10px; padding-bottom:20px; }
+  .history-label { font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; }
+  .history-list { display:flex; flex-direction:column; gap:8px; }
+  .history-item { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px 14px; display:flex; align-items:flex-start; gap:10px; cursor:pointer; }
+  .history-item:active { opacity:0.7; }
+  .history-dot { width:8px; height:8px; border-radius:50%; background:var(--accent); flex-shrink:0; margin-top:4px; }
+  .history-info { flex:1; min-width:0; }
+  .history-name { font-size:11px; letter-spacing:1px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .history-text { font-size:12px; color:var(--text); margin-top:4px; line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .history-empty { font-size:12px; color:var(--muted); letter-spacing:1px; text-align:center; padding:20px 0; }
+  .toast { position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:#1e1e1e; border:1px solid #333; color:#fff; font-family:var(--mono); font-size:12px; letter-spacing:1px; padding:10px 20px; border-radius:100px; opacity:0; transition:opacity 0.3s; pointer-events:none; z-index:99; white-space:nowrap; }
+  .toast.show { opacity:1; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .spinner { width:18px; height:18px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.8s linear infinite; flex-shrink:0; }
+</style>
+</head>
+<body>
+<div id="apiScreen">
+  <div class="api-logo">TEXT</div>
+  <div class="api-title">Groq APIキーを入力してください</div>
+  <input class="api-input" id="apiKeyInput" type="password" placeholder="gsk_xxxxxxxxxxxx" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <div class="api-hint">APIキーはこのデバイス内にのみ保存されます。</div>
+  <button class="btn-primary" id="btnApiSave">保存して開始</button>
+</div>
+<div class="header">
+  <div class="logo">TEXT</div>
+  <button class="btn-settings" id="btnSettings">⚙</button>
+</div>
+<div class="dropzone" id="dropzone">
+  <div class="drop-icon">🎙</div>
+  <div class="drop-title">音声ファイルを選択</div>
+  <div class="drop-sub">m4a / mp3 / wav / webm に対応</div>
+  <input type="file" class="drop-input" id="fileInput" accept="audio/*">
+</div>
+<div class="file-info" id="fileInfo">
+  <div class="file-dot"></div>
+  <div class="file-details">
+    <div class="file-name" id="fileName"></div>
+    <div class="file-size" id="fileSize"></div>
+  </div>
+  <button class="btn-clear" id="btnClear">✕</button>
+</div>
+<button class="btn-transcribe" id="btnTranscribe" disabled>
+  <span id="transcribeLabel">文字起こし開始</span>
+</button>
+<div class="progress-wrap" id="progressWrap">
+  <div class="progress-label">処理中...</div>
+  <div class="progress-bar-bg"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+</div>
+<div class="result-panel" id="resultPanel">
+  <div class="result-header">
+    <div class="result-label">文字起こし結果</div>
+    <button class="btn-copy" id="btnCopy">コピー</button>
+  </div>
+  <div class="result-text" id="resultText"></div>
+  <button class="btn-share" id="btnShare">テキストを共有</button>
+</div>
+<div class="history-section" id="historySection">
+  <div class="history-label">履歴</div>
+  <div class="history-list" id="historyList"></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+let apiKey=localStorage.getItem('groq_api_key')||'';
+let selectedFile=null;
+let history=JSON.parse(localStorage.getItem('transcribe_history')||'[]');
+const apiScreen=document.getElementById('apiScreen');
+const apiKeyInput=document.getElementById('apiKeyInput');
+const btnApiSave=document.getElementById('btnApiSave');
+const btnSettings=document.getElementById('btnSettings');
+const dropzone=document.getElementById('dropzone');
+const fileInput=document.getElementById('fileInput');
+const fileInfo=document.getElementById('fileInfo');
+const fileName=document.getElementById('fileName');
+const fileSize=document.getElementById('fileSize');
+const btnClear=document.getElementById('btnClear');
+const btnTranscribe=document.getElementById('btnTranscribe');
+const transcribeLabel=document.getElementById('transcribeLabel');
+const progressWrap=document.getElementById('progressWrap');
+const progressBar=document.getElementById('progressBar');
+const resultPanel=document.getElementById('resultPanel');
+const resultText=document.getElementById('resultText');
+const btnCopy=document.getElementById('btnCopy');
+const btnShare=document.getElementById('btnShare');
+const historyList=document.getElementById('historyList');
+const toast=document.getElementById('toast');
+if(!apiKey){apiScreen.style.display='flex';}else{apiScreen.classList.add('hidden');setTimeout(()=>{apiScreen.style.display='none';},10);}
+renderHistory();
+btnApiSave.addEventListener('click',()=>{const val=apiKeyInput.value.trim();if(!val.startsWith('gsk_')){showToast('APIキーは gsk_ から始まります');return;}apiKey=val;localStorage.setItem('groq_api_key',apiKey);apiScreen.classList.add('hidden');setTimeout(()=>{apiScreen.style.display='none';},420);});
+btnSettings.addEventListener('click',()=>{apiKeyInput.value='';apiScreen.style.display='flex';apiScreen.classList.remove('hidden');});
+fileInput.addEventListener('change',e=>{const file=e.target.files[0];if(file)selectFile(file);});
+function selectFile(file){selectedFile=file;fileName.textContent=file.name;fileSize.textContent=formatSize(file.size);fileInfo.classList.add('show');dropzone.classList.add('has-file');btnTranscribe.disabled=false;resultPanel.classList.remove('show');}
+function formatSize(bytes){if(bytes<1024*1024)return(bytes/1024).toFixed(1)+' KB';return(bytes/1024/1024).toFixed(1)+' MB';}
+btnClear.addEventListener('click',()=>{selectedFile=null;fileInput.value='';fileInfo.classList.remove('show');dropzone.classList.remove('has-file');btnTranscribe.disabled=true;resultPanel.classList.remove('show');});
+btnTranscribe.addEventListener('click',async()=>{
+  if(!selectedFile)return;
+  if(!apiKey){showToast('APIキーが設定されていません');return;}
+  btnTranscribe.disabled=true;
+  transcribeLabel.innerHTML='<span class="spinner"></span>&nbsp;文字起こし中...';
+  progressWrap.classList.add('show');
+  resultPanel.classList.remove('show');
+  let prog=0;
+  const pi=setInterval(()=>{prog=Math.min(prog+Math.random()*8,90);progressBar.style.width=prog+'%';},300);
+  try{
+    const formData=new FormData();
+    formData.append('file',selectedFile,selectedFile.name);
+    formData.append('model','whisper-large-v3-turbo');
+    formData.append('language','ja');
+    formData.append('response_format','json');
+    const res=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{method:'POST',headers:{'Authorization':`Bearer ${apiKey}`},body:formData});
+    clearInterval(pi);progressBar.style.width='100%';
+    if(!res.ok){const err=await res.json();throw new Error(err.error?.message||'APIエラー');}
+    const data=await res.json();
+    const text=data.text||'（文字起こし結果が空です）';
+    resultText.textContent=text;
+    resultPanel.classList.add('show');
+    const item={name:selectedFile.name,text,date:new Date().toLocaleString('ja-JP')};
+    history.unshift(item);
+    if(history.length>20)history=history.slice(0,20);
+    localStorage.setItem('transcribe_history',JSON.stringify(history));
+    renderHistory();
+    showToast('文字起こし完了！');
+  }catch(e){clearInterval(pi);showToast('エラー: '+e.message);}
+  finally{progressBar.style.width='0%';progressWrap.classList.remove('show');transcribeLabel.textContent='文字起こし開始';btnTranscribe.disabled=false;}
+});
+btnCopy.addEventListener('click',()=>{const text=resultText.textContent;if(navigator.clipboard){navigator.clipboard.writeText(text).then(()=>showToast('コピーしました'));}else{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('コピーしました');}});
+btnShare.addEventListener('click',()=>{const text=resultText.textContent;if(navigator.share){navigator.share({text}).catch(()=>{});}else if(navigator.clipboard){navigator.clipboard.writeText(text).then(()=>showToast('コピーしました'));}});
+function renderHistory(){if(history.length===0){historyList.innerHTML='<div class="history-empty">履歴はありません</div>';return;}historyList.innerHTML='';history.forEach(item=>{const el=document.createElement('div');el.className='history-item';el.innerHTML=`<div class="history-dot"></div><div class="history-info"><div class="history-name">${item.name} · ${item.date}</div><div class="history-text">${item.text}</div></div>`;el.addEventListener('click',()=>{resultText.textContent=item.text;resultPanel.classList.add('show');window.scrollTo({top:0,behavior:'smooth'});});historyList.appendChild(el);});}
+let toastTimer;
+function showToast(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),2800);}
+</script>
+</body>
+</html>
